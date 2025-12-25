@@ -1,0 +1,60 @@
+# Virtual environment
+.venv/
+venv/
+.fnol_venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+*.egg-info/
+dist/
+build/
+
+
+# Data
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Models
+models/checkpoints/*
+models/final/*
+!models/checkpoints/.gitkeep
+!models/final/.gitkeep
+
+# MLflow
+mlruns/*
+!mlruns/.gitkeep
+
+# Pins
+model_pins_board/*
+!model_pins_board/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment
+.fnol_venv
+.fnol_venv.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Reports
+reports/figures/*
+!reports/figures/.gitkeep
+
+#Others
+admiral.py
+project_structure.txt
