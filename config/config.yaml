@@ -1,7 +1,7 @@
 # ============================================================================
 # FILE: config/config.yaml
 # ============================================================================
-"""
+
 project:
   name: "insurance-claims-prediction"
   version: "0.1.0"
@@ -39,4 +39,3 @@ models:
     - xgboost
   
   target_variable: "Ultimate_Claim_Amount"
-"""

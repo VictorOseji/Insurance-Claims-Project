@@ -1,9 +1,8 @@
 # ============================================================================
 # FILE: config/feature_config.yaml
 # ============================================================================
-"""
-# Feature engineering configuration
 
+# Feature engineering configuration
 date_columns:
   - Accident_Date
   - FNOL_Date
@@ -82,4 +81,4 @@ numeric_features:
   - Vehicle_Age
   - wk_days
   - Estimated_Claim_Amount
-"""
+
