@@ -5,6 +5,7 @@
 import sys
 from pathlib import Path
 import numpy as np
+from vetiver import vetiverModel
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -82,12 +83,19 @@ def main():
         available_categorical
     )
     
+    # Get feature names after preprocessing
+    feature_names = preprocessor.get_feature_names()
+    logger.info(f"Feature names after preprocessing: {len(feature_names)} features")
+    
     # Save preprocessor
     preprocessor.save_preprocessor()
     
     # Initialize trainer
     logger.info("\n4. Initializing model trainer...")
     trainer = ModelTrainer(config, model_params)
+    
+    # Store feature names in trainer for Vetiver
+    trainer.feature_names = feature_names
     
     # Train all models
     logger.info("\n5. Training models with hyperparameter tuning...")

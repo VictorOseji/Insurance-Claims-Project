@@ -50,11 +50,14 @@ class ModelTrainer:
                 "run_id": run.info.run_id
             })
             self.experiment_tracker.log_metrics(metrics)
-            self.experiment_tracker.log_model(model, "sklearn")
+            self.experiment_tracker.log_model(model)  # ✅ Unified method
+            
+            # Get feature names from preprocessor (if available)
+            feature_names = getattr(self, 'feature_names', None)
             
             # Create Vetiver model and pin
             v_model = self.vetiver_wrapper.create_vetiver_model(
-                model, "linear_regression", X_train
+                model, "linear_regression", X_train, feature_names=feature_names
             )
             pin_name = self.pins_manager.pin_model(
                 v_model, lr_model.model_name, metrics
@@ -94,11 +97,14 @@ class ModelTrainer:
             })
             self.experiment_tracker.log_params(best_params)
             self.experiment_tracker.log_metrics(metrics)
-            self.experiment_tracker.log_model(best_model, "sklearn")
+            self.experiment_tracker.log_model(best_model)  # ✅ Unified method
+            
+            # Get feature names from preprocessor (if available)
+            feature_names = getattr(self, 'feature_names', None)
             
             # Create Vetiver model and pin
             v_model = self.vetiver_wrapper.create_vetiver_model(
-                best_model, "random_forest", X_train
+                best_model, "random_forest", X_train, feature_names=feature_names
             )
             pin_name = self.pins_manager.pin_model(
                 v_model, rf_model.model_name, metrics, best_params
@@ -139,11 +145,14 @@ class ModelTrainer:
             })
             self.experiment_tracker.log_params(best_params)
             self.experiment_tracker.log_metrics(metrics)
-            self.experiment_tracker.log_model(best_model, "sklearn")
+            self.experiment_tracker.log_model(best_model)  # ✅ Unified method
+            
+            # Get feature names from preprocessor (if available)
+            feature_names = getattr(self, 'feature_names', None)
             
             # Create Vetiver model and pin
             v_model = self.vetiver_wrapper.create_vetiver_model(
-                best_model, "gradient_boosting", X_train
+                best_model, "gradient_boosting", X_train, feature_names=feature_names
             )
             pin_name = self.pins_manager.pin_model(
                 v_model, gbm_model.model_name, metrics, best_params
@@ -184,11 +193,14 @@ class ModelTrainer:
             })
             self.experiment_tracker.log_params(best_params)
             self.experiment_tracker.log_metrics(metrics)
-            mlflow.xgboost.log_model(best_model, "model")
+            self.experiment_tracker.log_model(best_model)  # ✅ Unified method handles XGBoost
+            
+            # Get feature names from preprocessor (if available)
+            feature_names = getattr(self, 'feature_names', None)
             
             # Create Vetiver model and pin
             v_model = self.vetiver_wrapper.create_vetiver_model(
-                best_model, "xgboost", X_train
+                best_model, "xgboost", X_train, feature_names=feature_names
             )
             pin_name = self.pins_manager.pin_model(
                 v_model, xgb_model.model_name, metrics, best_params
@@ -201,3 +213,4 @@ class ModelTrainer:
             logger.info(f"Best params: {best_params}")
             
             return metrics, run.info.run_id
+

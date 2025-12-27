@@ -104,7 +104,17 @@ class DataPreprocessor:
         numeric_features: List[str],
         categorical_features: List[str]
     ) -> Tuple[np.ndarray, np.ndarray]:
-        """Fit preprocessor on train and transform both train and test"""
+        """Fit preprocessor on train and transform both train and test
+        
+        Args:
+            X_train: Training features
+            X_test: Test features
+            numeric_features: List of numeric feature names
+            categorical_features: List of categorical feature names
+            
+        Returns:
+            Tuple of (X_train_processed, X_test_processed, feature_names)
+        """
         logger.info("Fitting and transforming data...")
         
         # Create pipeline
@@ -126,6 +136,7 @@ class DataPreprocessor:
         
         logger.info(f"Processed training data shape: {X_train_processed.shape}")
         logger.info(f"Processed test data shape: {X_test_processed.shape}")
+        logger.info(f"Total features after preprocessing: {len(self.feature_names)}")
         
         return X_train_processed, X_test_processed
     
@@ -135,20 +146,44 @@ class DataPreprocessor:
         categorical_features: List[str],
         X: pd.DataFrame
     ) -> List[str]:
-        """Get feature names after one-hot encoding"""
+        """Get feature names after one-hot encoding
+        
+        Args:
+            numeric_features: Original numeric feature names
+            categorical_features: Original categorical feature names
+            X: Original DataFrame (before transformation)
+            
+        Returns:
+            List of feature names after transformation
+        """
         feature_names = []
         
-        # Add numeric feature names
+        # Add numeric feature names (they stay the same)
         feature_names.extend(numeric_features)
         
         # Add one-hot encoded feature names
         for cat_feat in categorical_features:
             if cat_feat in X.columns:
-                unique_values = X[cat_feat].unique()
+                # Get unique values for this categorical feature
+                unique_values = sorted(X[cat_feat].dropna().unique())
                 for val in unique_values:
+                    # Create feature name: feature_value
                     feature_names.append(f"{cat_feat}_{val}")
         
+        logger.info(f"Generated {len(feature_names)} feature names")
+        
         return feature_names
+    
+    def get_feature_names(self) -> List[str]:
+        """Get the list of feature names after preprocessing
+        
+        Returns:
+            List of feature names
+        """
+        if self.feature_names is None:
+            logger.warning("Preprocessor has not been fitted yet. No feature names available.")
+            return []
+        return self.feature_names
     
     def save_preprocessor(self, filepath: str = "models/preprocessor.joblib"):
         """Save fitted preprocessor"""

@@ -3,14 +3,13 @@
 # ============================================================================
 """Pins board management utilities"""
 from pins import board_folder
-from vetiver import vetiver_pin_write, vetiver_pin_read
+from vetiver import vetiver_pin_write, VetiverModel
 from datetime import datetime
 from typing import Dict, Any, Optional
 import logging
 import os
 
 logger = logging.getLogger(__name__)
-
 
 class PinsBoardManager:
     """Manage pins board operations"""
@@ -58,7 +57,7 @@ class PinsBoardManager:
     def load_model(self, pin_name: str):
         """Load model from pins board"""
         try:
-            v_model = vetiver_pin_read(self.board, pin_name)
+            v_model = VetiverModel.from_pin(self.board, pin_name)
             logger.info(f"Model loaded from pin: {pin_name}")
             return v_model
         except Exception as e:

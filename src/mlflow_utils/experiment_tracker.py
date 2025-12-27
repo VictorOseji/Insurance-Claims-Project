@@ -3,8 +3,11 @@
 # ============================================================================
 """MLflow experiment tracking utilities"""
 import mlflow
+import mlflow.sklearn
+import mlflow.xgboost
 import logging
 from typing import Dict, Any
+from xgboost import XGBRegressor, XGBClassifier
 
 logger = logging.getLogger(__name__)
 
@@ -32,12 +35,36 @@ class ExperimentTracker:
         for param_name, param_value in params.items():
             mlflow.log_param(param_name, param_value)
     
-    def log_model(self, model, model_type: str = "sklearn"):
-        """Log model to MLflow"""
-        if model_type == "sklearn":
-            mlflow.sklearn.log_model(model, "model")
-        elif model_type == "xgboost":
-            mlflow.xgboost.log_model(model, "model")
+    def log_model(self, model, artifact_path: str = "model"):
+        """Log model to MLflow with automatic type detection
+        
+        Args:
+            model: Trained model (sklearn or xgboost)
+            artifact_path: Path within MLflow run to save model
+        """
+        try:
+            # Check if it's an XGBoost model
+            if isinstance(model, (XGBRegressor, XGBClassifier)):
+                # For XGBoost models from GridSearchCV, use sklearn logging
+                # to avoid _estimator_type error
+                if not hasattr(model, '_estimator_type'):
+                    logger.warning(
+                        "XGBoost model missing _estimator_type, using sklearn logging"
+                    )
+                    mlflow.sklearn.log_model(model, artifact_path)
+                else:
+                    mlflow.xgboost.log_model(model, artifact_path)
+            else:
+                # For all other sklearn models
+                mlflow.sklearn.log_model(model, artifact_path)
+                
+            logger.info(f"Model logged to MLflow at: {artifact_path}")
+            
+        except Exception as e:
+            logger.error(f"Error logging model to MLflow: {e}")
+            # Fallback to sklearn logging
+            logger.info("Attempting fallback to sklearn logging...")
+            mlflow.sklearn.log_model(model, artifact_path)
     
     def set_tags(self, tags: Dict[str, str]):
         """Set tags for the run"""
